@@ -17,16 +17,14 @@ public class ServerClient implements Runnable {
 	
 	public void run() {
 		try {
-			byte[] b;
+			int b;
 			String toRead;
 			InputStream toRecv = connectedSock.getInputStream();
 			OutputStream toSend = connectedSock.getOutputStream();
 			while(true) {
-				b = new byte[20];
 				if (toRecv.available() > 0) {
-					toRecv.read(b);
-					toRead = new String(b);
-					System.out.println(toRead + " Success");
+					while ((b = toRecv.read()) != -1)
+					System.out.print((char)b);
 					toSend.write(b);
 					toSend.flush();
 				}
