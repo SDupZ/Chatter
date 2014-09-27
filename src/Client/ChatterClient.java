@@ -17,7 +17,7 @@ public class ChatterClient {
 		InputStream in;
 		int b;
 		reader = new Scanner(System.in);
-		hostServer = new InetSocketAddress("localhost", _HOST_PORT);
+		hostServer = new InetSocketAddress("203.96.194.80", _HOST_PORT);
 		connectingSock = new Socket();
 		try {
 			connectingSock.connect(hostServer);
