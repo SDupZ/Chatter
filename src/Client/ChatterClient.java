@@ -9,6 +9,7 @@ public class ChatterClient {
 	Socket connectingSock;
 	InetSocketAddress hostServer;
 	static final int _HOST_PORT = 3001;
+	static final String _ADDRESS = "localhost";
 	Scanner reader;
 	
 	public void start() {
@@ -17,7 +18,7 @@ public class ChatterClient {
 		InputStream in;
 		int b;
 		reader = new Scanner(System.in);
-		hostServer = new InetSocketAddress("203.96.194.80", _HOST_PORT);
+		hostServer = new InetSocketAddress(_ADDRESS, _HOST_PORT);
 		connectingSock = new Socket();
 		try {
 			connectingSock.connect(hostServer);
