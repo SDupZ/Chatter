@@ -18,7 +18,6 @@ public class ServerClient implements Runnable {
 	public void run() {
 		try {
 			int b;
-			String toRead;
 			InputStream toRecv = connectedSock.getInputStream();
 			OutputStream toSend = connectedSock.getOutputStream();
 			while(true) {
