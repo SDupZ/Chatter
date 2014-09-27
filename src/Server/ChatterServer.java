@@ -1,6 +1,5 @@
 package Server;
 
-import java.util.*;
 import java.net.*;
 import java.io.*;
 
@@ -33,5 +32,5 @@ public class ChatterServer {
 	public static void main(String[] args) {
 		ChatterServer program =  new ChatterServer();
 		program.start();
-	}//Hello
+	}
 }

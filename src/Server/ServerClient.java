@@ -20,13 +20,10 @@ public class ServerClient implements Runnable {
 			int b;
 			InputStream toRecv = connectedSock.getInputStream();
 			OutputStream toSend = connectedSock.getOutputStream();
-			while(true) {
-				if (toRecv.available() > 0) {
-					while ((b = toRecv.read()) != -1)
-					System.out.print((char)b);
-					toSend.write(b);
-					toSend.flush();
-				}
+			while ((b = toRecv.read()) != -1) {
+				System.out.print((char)b);
+				toSend.write(b);
+				toSend.flush();
 			}
 		} catch (IOException exception) {
 			System.out.println(exception.toString());
