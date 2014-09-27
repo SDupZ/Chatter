@@ -5,12 +5,12 @@ import java.io.*;
 import java.util.*;
 
 public class ChatterClient {
+	private static final int _HOST_PORT = 3001;
+	static final String _ADDRESS = "203.96.194.80";
 	
-	Socket connectingSock;
-	InetSocketAddress hostServer;
-	static final int _HOST_PORT = 3001;
-	static final String _ADDRESS = "localhost";
-	Scanner reader;
+	private Socket connectingSock;
+	private InetSocketAddress hostServer;
+	private Scanner reader;
 	
 	public void start() {
 		String toSend;
