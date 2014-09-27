@@ -26,6 +26,7 @@ public class ChatterServer {
 			}	
 		} catch (IOException exception) {
 			System.out.println(exception.toString());
+			exception.printStackTrace();
 		}
 	}
 	
