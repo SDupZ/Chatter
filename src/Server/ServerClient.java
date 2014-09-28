@@ -1,13 +1,14 @@
 package Server;
 
 import java.net.*;
-import java.io.*;
+import ChatterIO.*;
 
-public class ServerClient implements Runnable {
+public class ServerClient {
 	
-	Socket connectedSock;
-	int userNumber;
-	int portNumber;
+	private Socket connectedSock;
+	private int userNumber;
+	private int portNumber;
+	private SChatterWriter writer;
 	
 	ServerClient(Socket connectedSock, int userNumber, int portNumber) {
 		this.connectedSock = connectedSock;
@@ -15,18 +16,17 @@ public class ServerClient implements Runnable {
 		this.portNumber = portNumber;
 	}
 	
-	public void run() {
-		try {
-			int b;
-			InputStream toRecv = connectedSock.getInputStream();
-			OutputStream toSend = connectedSock.getOutputStream();
-			while ((b = toRecv.read()) != -1) {
-				System.out.print((char)b);
-				toSend.write(b);
-				toSend.flush();
-			}
-		} catch (IOException exception) {
-			System.out.println(exception.toString());
-		}
+	public Socket getSock() {
+		return connectedSock;
 	}
+	
+	public void startListening() {
+		new Thread(new SChatterListener(this)).start();
+		writer = new SChatterWriter(this);
+	}
+	
+	public void toSend(byte b) {
+		writer.send(b); 
+	}
+	
 }

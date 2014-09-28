@@ -4,10 +4,9 @@ import java.net.*;
 import java.io.*;
 
 public class ChatterServer {
+	private final static int _PORT = 3001;
+	private final static int _MAX_USERS = 10;
 	
-	String input;
-	int _PORT = 3001;
-	int _MAX_USERS = 10;
 	ServerSocket server;
 	
 	public void start(){
@@ -19,7 +18,7 @@ public class ChatterServer {
 			server = new ServerSocket(_PORT);
 			while(true) {
 				users[userCounter] = new ServerClient(server.accept(), userCounter, _PORT);
-				new Thread(users[userCounter]).start();
+				users[userCounter].startListening();
 				System.out.println("Connection Successful");
 				userCounter++;
 			}	

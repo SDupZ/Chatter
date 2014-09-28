@@ -2,40 +2,67 @@ package Client;
 
 import java.net.*;
 import java.io.*;
-import java.util.*;
+import ChatterIO.*;
 
 public class ChatterClient {
 	private static final int _HOST_PORT = 3001;
-	static final String _ADDRESS = "203.96.194.80";
+	static final String _ADDRESS = "localhost";
+	private final static int _ACCPETING_PORT = 3002;
+	private final static int _MAX_USERS = 10;
 	
-	private Socket connectingSock;
+	private Socket hostSock;
+	private Socket[] callUsersR;
+	private Socket[] callUsers;
+	private int callCounterR;
+	private int callCounter;
+	private ServerSocket socketAcceptor;
 	private InetSocketAddress hostServer;
-	private Scanner reader;
 	
 	public void start() {
-		String toSend;
-		OutputStream out;
-		InputStream in;
-		int b;
-		reader = new Scanner(System.in);
 		hostServer = new InetSocketAddress(_ADDRESS, _HOST_PORT);
-		connectingSock = new Socket();
+		hostSock = new Socket();
+		callUsersR = new Socket[_MAX_USERS];
+		callUsers = new Socket[_MAX_USERS];
 		try {
-			connectingSock.connect(hostServer);
+			socketAcceptor = new ServerSocket(_ACCPETING_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		callCounterR = 0;
+		callCounter = 0;
+		try {
+			hostSock.connect(hostServer);
 			System.out.println("Connection Successful");
-			out = connectingSock.getOutputStream();
-			in = connectingSock.getInputStream();
+			new Thread(new ChatterListener(hostSock)).start();
+			new Thread(new ChatterWriter(this)).start();
 			while (true) {
-				toSend = reader.next();
-				out.write(toSend.getBytes());
-				out.flush();
-				while ((b = in.read()) != -1) {
-					System.out.print((char)b);
-				}
+				callUsersR[callCounter] = socketAcceptor.accept();
+				new Thread(new ChatterListener(callUsersR[callCounterR])).start();
+				System.out.println("Connected successfully to: " + callUsersR[callCounterR].getRemoteSocketAddress().toString());
+				callCounterR++;
 			}
-		} catch (IOException exception) {
-			System.out.println("Connection error, Connection was denied");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}	
+	}
+	
+	public Socket getSock() {
+		return hostSock;
+	}
+	
+	public void clientConnect(String address, int port) {
+		callUsers[callCounter] = new Socket();
+		System.out.println(address + " " + port);
+		try {
+			callUsers[callCounter].connect(new InetSocketAddress(address, port));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		callCounter++;
+	}
+	
+	public Socket getCallUser(int userNumber) {
+		return callUsers[userNumber];
 	}
 	
 	public static void main(String[] args) {
