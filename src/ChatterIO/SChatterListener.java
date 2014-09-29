@@ -1,3 +1,8 @@
+/*Author: Nectarheart
+ * Simple class that listens on the server client's socket's input stream for incoming data.
+ * Only listens on one socket per server client instance.
+ */
+
 package ChatterIO;
 
 import java.io.*;
@@ -12,6 +17,7 @@ public class SChatterListener implements Runnable {
 		this.sClient = sClient;
 	}
 	
+	//Currently only prints data to the console and mirrors it back to the user
 	public void run() {
 		InputStream in;
 		int b;

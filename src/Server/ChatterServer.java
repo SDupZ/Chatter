@@ -1,27 +1,36 @@
+/*Author: Nectarheart
+ * 
+ * Simple class to listen for incoming connections made by client.
+ * All client specific server operations are handled by the ServerClient class.
+ * Any broadcasts and other operations that affect all clients will be done in another thread.
+*/
+
 package Server;
 	
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class ChatterServer {
 	private final static int _PORT = 3001;
-	private final static int _MAX_USERS = 10;
 	
-	ServerSocket server;
+	private ServerSocket server;
+	
+	//Hash map to store users information server side. Will implement more sophisticated ID in later versions
+	private HashMap <InetAddress, ServerClient> users;
 	
 	public void start(){
-		ServerClient[] users;
-		int userCounter = 0;
-		users = new ServerClient[_MAX_USERS];
+		users = new HashMap<InetAddress, ServerClient>();
+		Socket incomingClient;
 		System.out.println("Hello");
 		try {
 			server = new ServerSocket(_PORT);
 			while(true) {
-				users[userCounter] = new ServerClient(server.accept(), userCounter, _PORT);
-				users[userCounter].startListening();
+				incomingClient = server.accept();
+				users.put(incomingClient.getInetAddress(), new ServerClient(incomingClient, incomingClient.getInetAddress(), _PORT));
+				users.get(incomingClient.getInetAddress()).startListening();
 				System.out.println("Connection Successful");
-				userCounter++;
-			}	
+			}		
 		} catch (IOException exception) {
 			System.out.println(exception.toString());
 			exception.printStackTrace();

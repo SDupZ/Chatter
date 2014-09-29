@@ -1,3 +1,9 @@
+/*Author: Nectarheart
+ * Simple class that listens on the client's socket's input stream for incoming data.
+ * One instance of this class is for incoming calls.
+ * The other instance is for individual calls to other users and for communication with the server.
+ */
+
 package ChatterIO;
 
 import java.io.*;
@@ -11,6 +17,7 @@ public class ChatterListener implements Runnable {
 		this.clientSock = clientSock;
 	}
 	
+	//Currently only prints data to the console
 	public void run() {
 		InputStream in;
 		int b;

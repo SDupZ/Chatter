@@ -1,45 +1,56 @@
+/*Author: Nectarheart
+ * Class that provides connection to server and other clients for calls. Contains all current user information as well as other clients 
+ * who are currently in a call with this client.
+ * More information as well as accessor and mutator methods will be added with later versions.
+ */
+
 package Client;
 
 import java.net.*;
 import java.io.*;
 import ChatterIO.*;
+import java.util.*;
 
 public class ChatterClient {
+	
+	//Server's port to accept connections
 	private static final int _HOST_PORT = 3001;
+	
+	//Server's address
 	static final String _ADDRESS = "localhost";
+	
+	//Port that this client will accept connections on
 	private final static int _ACCPETING_PORT = 3002;
-	private final static int _MAX_USERS = 10;
 	
 	private Socket hostSock;
-	private Socket[] callUsersR;
-	private Socket[] callUsers;
-	private int callCounterR;
-	private int callCounter;
+	
+	//Hashmap of other users currently in a call with this user
+	private HashMap<InetAddress, Socket> callUsers;
 	private ServerSocket socketAcceptor;
-	private InetSocketAddress hostServer;
+	private InetSocketAddress hostServerAddress;
 	
 	public void start() {
-		hostServer = new InetSocketAddress(_ADDRESS, _HOST_PORT);
+		hostServerAddress = new InetSocketAddress(_ADDRESS, _HOST_PORT);
 		hostSock = new Socket();
-		callUsersR = new Socket[_MAX_USERS];
-		callUsers = new Socket[_MAX_USERS];
+		callUsers = new HashMap<InetAddress, Socket>();
 		try {
 			socketAcceptor = new ServerSocket(_ACCPETING_PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		callCounterR = 0;
-		callCounter = 0;
 		try {
-			hostSock.connect(hostServer);
+			Socket incomingCaller;
+			hostSock.connect(hostServerAddress);
 			System.out.println("Connection Successful");
 			new Thread(new ChatterListener(hostSock)).start();
 			new Thread(new ChatterWriter(this)).start();
+			
+			//Listens on Server Socket for incoming calls from other users 
 			while (true) {
-				callUsersR[callCounter] = socketAcceptor.accept();
-				new Thread(new ChatterListener(callUsersR[callCounterR])).start();
-				System.out.println("Connected successfully to: " + callUsersR[callCounterR].getRemoteSocketAddress().toString());
-				callCounterR++;
+				incomingCaller = socketAcceptor.accept();
+				callUsers.put(incomingCaller.getInetAddress(), incomingCaller);
+				new Thread(new ChatterListener(callUsers.get(incomingCaller.getInetAddress()))).start();
+				System.out.println("Connected successfully to: " + callUsers.get(incomingCaller.getInetAddress()).getRemoteSocketAddress().toString());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,19 +61,37 @@ public class ChatterClient {
 		return hostSock;
 	}
 	
+	//Method to connect this user with another user who this user is attempting to call
 	public void clientConnect(String address, int port) {
-		callUsers[callCounter] = new Socket();
+		Socket userToCall = new Socket();
 		System.out.println(address + " " + port);
 		try {
-			callUsers[callCounter].connect(new InetSocketAddress(address, port));
+			userToCall.connect(new InetSocketAddress(address, port));
+			callUsers.put(userToCall.getInetAddress(), userToCall);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		callCounter++;
 	}
 	
-	public Socket getCallUser(int userNumber) {
-		return callUsers[userNumber];
+	public Socket getCallUser(InetAddress userID) {
+		return callUsers.get(userID);
+	}
+	
+	//Method to retrieve all  addresses of current users in a call with this user
+	public ArrayList<String> getCallUsers() {
+		ArrayList<String> list = new ArrayList<String>();
+		Iterator<Map.Entry<InetAddress, Socket>> it = callUsers.entrySet().iterator();
+		while (it.hasNext()) {
+			list.add(it.next().getKey().toString());	
+		}
+		return list;
+	}
+	
+	public void printCurrentCallUsers() {
+		Iterator<String> it = getCallUsers().iterator();
+		while (it.hasNext()) {
+			System.out.println(it.next());	
+		}
 	}
 	
 	public static void main(String[] args) {
