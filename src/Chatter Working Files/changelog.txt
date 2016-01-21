@@ -1,0 +1,22 @@
+2013.02.06(2) 		- Added new Package Dispatch Class
+			-Changed playback to implement a queue.
+			-Drop a call now works
+Class Specific Changes
+ClientReceiver		-No longer handles the packages. It gives all packagse to the packagedispatch
+					 thread which then handles it.
+Playback		-Now uses a queue. Calling play will add the audiobytes to the queue to be played.
+			
+All Features:		-Login to server.
+			-Register username and password with server.
+			-Add a contact with a username.
+			-See who is online (not who is offline or pending).
+			-Call a contact and start voice chat.
+			-Drop a call.
+
+To do:			-Show offline + online contacts with green, red and grey notifiers.
+			-Remove a contact.
+			-Text messaging.
+			-(Music Streaming) 
+			-Volume and mute controls.
+			-Bug check.
+			

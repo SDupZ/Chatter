@@ -1,0 +1,53 @@
+import java.io.*;
+import java.net.*;
+import javax.sound.sampled.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class Sender implements Runnable {
+    
+    private Socket socket;
+    private ObjectOutputStream out;
+    private Server server;
+    private ConcurrentLinkedQueue<Package> senderQueue;
+    
+    public Sender(Socket socket, Server server) {
+        senderQueue = new ConcurrentLinkedQueue<Package>();
+        this.socket = socket;
+        this.server = server;
+        try {
+            out = new ObjectOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+            StackTraceElement[] elements = e.getStackTrace();
+            for (int i = 0; i < elements.length; i++) {
+                server.print(elements[i].toString());
+            }
+        }
+        new Thread(this).start();
+    }
+    
+    public synchronized void forward(Package pack) {
+       senderQueue.add(pack);
+    }
+    
+    public void run() {
+        Package currentPack;
+        while (true) {
+            if (!senderQueue.isEmpty()) {
+                currentPack = senderQueue.remove();
+                try {
+                    out.writeObject(currentPack);
+                    out.flush();
+                    out.reset();
+                } catch (IOException e) {
+                    StackTraceElement[] elements = e.getStackTrace();
+                    for (int i = 0; i < elements.length; i++) {
+                        server.print(elements[i].toString());
+                    }
+                }
+                if (senderQueue.size() > 500) {
+                    senderQueue.clear();
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+2013.02.06 		- Removed all music streaming functionality (share button still there but does nothing).
+			- Can add a contact.
+
+
+All Features:		-Login to server.
+			-Register username and password with server.
+			-Add a contact with a username.
+			-See who is online (not who is offline or pending).
+			-Call a contact and start voice chat.
+			-Drop a call.
+
+To do:			-Show offline + online contacts with green, red and grey notifiers.
+			-Remove a contact.
+			-Text messaging.
+			-(Music Streaming) 
+			-Volume and mute controls.
+			-Bug check.
+
+Class Specific Changes
+
+ClientReceiver:		-Add new comments. "//+++++" = in class related code.

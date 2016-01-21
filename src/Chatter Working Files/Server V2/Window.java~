@@ -1,0 +1,24 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+
+public class Window extends JFrame {
+    
+    AJPanel aJ;
+    Server server;
+    
+    public Window(Server server) {
+        this.server = server;
+        aJ = new AJPanel(server);
+    }
+    
+    public void start() {
+        JFrame window = new JFrame("Application");
+        window.setContentPane(aJ);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setVisible(true);
+        window.setSize(800, 500);
+        window.setLocation(300, 150);
+    }
+}
+        

@@ -1,0 +1,23 @@
+import java.io.*;
+import java.net.*;
+import javax.sound.sampled.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class TestSender {
+    
+    private Socket socket;
+    private BufferedOutputStream out;
+    
+    public TestSender(Socket socket) {
+        this.socket = socket;
+        try {
+            out = new BufferedOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public synchronized void forward(byte[] bytes) {
+       out.write(bytes, 0, bytes.length);
+    }
+}

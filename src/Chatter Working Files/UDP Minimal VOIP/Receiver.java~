@@ -1,0 +1,49 @@
+import java.io.*;
+import java.net.*;
+import javax.sound.sampled.*;
+
+public class Receiver implements Runnable {
+    
+    private Socket socket;
+    private ObjectInputStream in;
+    private Package currentPack;
+    private VClient virtualClient;
+    private Server server;
+    
+    public Receiver(Socket socket, VClient virtualClient, Server server) {
+        this.socket = socket;
+        this.virtualClient = virtualClient;
+        this.server = server;
+        try {
+            in = new ObjectInputStream(socket.getInputStream());
+        } catch (Exception e) {
+            StackTraceElement[] elements = e.getStackTrace();
+            for (int i = 0; i < elements.length; i++) {
+                server.print(elements[i].toString());
+            }
+        }
+    }
+    
+    public void run() {
+        while(true) {
+            try {
+                currentPack = (Package)in.readObject();
+                virtualClient.toServer(currentPack);
+            } catch (IOException e) {
+                StackTraceElement[] elements = e.getStackTrace();
+                for (int i = 0; i < elements.length; i++) {
+                    server.print(elements[i].toString());
+                }
+                server.print("Destroying client: " + virtualClient.toString());
+                virtualClient.destroy();
+                break;
+            } catch (ClassNotFoundException e) {
+                StackTraceElement[] elements = e.getStackTrace();
+                for (int i = 0; i < elements.length; i++) {
+                    server.print(elements[i].toString());
+                }
+                break;
+            }
+        }
+    }
+}

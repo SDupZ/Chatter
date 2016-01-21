@@ -1,0 +1,32 @@
+import java.io.*;
+import java.net.*;
+import javax.sound.sampled.*;
+
+public class TestReceiver implements Runnable {
+    
+    private Socket socket;
+    private TestVClient virtualClient;
+    
+    public TestReceiver(Socket socket, VClient virtualClient) {
+        this.socket = socket;
+        this.virtualClient = virtualClient;
+        try {
+            in = new BufferedInputStream(socket.getInputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void run() {
+        Playback playback = new Playback();
+        while(true) {
+            try {
+                byte[] bytes = new byte[1024];
+                in.read(bytes, 0, bytes.length);
+                playback.play(bytes);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

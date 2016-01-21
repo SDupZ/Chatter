@@ -1,0 +1,69 @@
+import java.io.*;
+import java.net.*;
+import javax.sound.sampled.*;
+
+public class Client {
+    private static final int PORT = 6677;
+    private static final String HOSTNAME = "192.168.2.6";
+    private static final int SIZE = 64;
+    
+    private Socket socket;
+    
+    public Client() {
+        try {
+            socket = new ServerSocket(PORT).accept();
+            //connect();  
+            startReceiver();
+            startSender();    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void connect(){
+        try{
+            socket.connect(new InetSocketAddress(HOSTNAME, PORT));   
+        }catch(IOException e){
+            e.printStackTrace();
+        } 
+    }
+    public void startSender(){
+        TargetDataLine line;
+        AudioFormat format;
+        format = new AudioFormat(8000.0f, 16, 1, true, true);
+        try {
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            line = (TargetDataLine) AudioSystem.getLine(info);
+            line.open(format);
+            line.start();
+            
+            while(true){   
+                byte[] audioBytes = new byte[line.getBufferSize() / 10];
+                line.read(audioBytes, 0, audioBytes.length);
+                BufferedOutputStream output = new BufferedOutputStream(socket.getOutputStream());
+                output.write(audioBytes, 0, audioBytes.length);
+                output.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void startReceiver(){
+        new Thread(new Runnable(){
+            byte[] bytes = new byte[SIZE];
+            Playback playback = new Playback();
+            
+            public void run(){
+                try{    
+                    while(true){
+                        BufferedInputStream input = new BufferedInputStream(socket.getInputStream());
+                        input.read(bytes, 0, bytes.length);
+                        playback.play(bytes);
+                    }     
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();  
+        
+    }
+}

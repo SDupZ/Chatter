@@ -1,0 +1,32 @@
+public class TreeNode {
+    
+    private Object obj;
+    private TreeNode leftChild;
+    private TreeNode rightChild;
+    
+    public Node(Object obj) {
+        
+        this.obj = obj;
+        
+    }
+    
+    public Object getObject() {
+        return obj;
+    }
+    
+    public TreeNode getLeftChild() {
+        return leftChild;
+    }
+    
+    public TreeNode getRightChild() {
+        return RightChild;
+    }
+    
+    public void setLeftChild(TreeNode leftChild) {
+        this.leftChild = leftChild;
+    }
+    
+    public void setRightChild(TreeNode rightChild) {
+        this.rightChild = rightChild;
+    }
+}
